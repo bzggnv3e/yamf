@@ -8,6 +8,7 @@ plugins {
     kotlin("android")
     id("kotlin-android")
     id("dev.rikka.tools.refine") version "4.3.0"
+    id("kotlin-parcelize")
 }
 
 android {

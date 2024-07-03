@@ -22,21 +22,23 @@ import com.github.kyuubiran.ezxhelper.utils.invokeMethodAs
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import io.github.kaii_lb.yamfsquared.manager.bases.BaseSimpleAdapter
-import io.github.kaii_lb.yamfsquared.databinding.ItemAppBinding
-import io.github.kaii_lb.yamfsquared.databinding.WindowAppListBinding
 import io.github.kaii_lb.yamfsquared.common.model.StartCmd
 import io.github.kaii_lb.yamfsquared.common.onException
 import io.github.kaii_lb.yamfsquared.common.resetAdapter
 import io.github.kaii_lb.yamfsquared.common.runIO
 import io.github.kaii_lb.yamfsquared.common.runMain
-import io.github.kaii_lb.yamfsquared.xposed.utils.AppInfoCache
+import io.github.kaii_lb.yamfsquared.databinding.ItemAppBinding
+import io.github.kaii_lb.yamfsquared.databinding.WindowAppListBinding
+import io.github.kaii_lb.yamfsquared.manager.bases.BaseSimpleAdapter
 import io.github.kaii_lb.yamfsquared.xposed.services.YAMFManager
+import io.github.kaii_lb.yamfsquared.xposed.ui.window.model.AppInfo
+import io.github.kaii_lb.yamfsquared.xposed.utils.AppInfoCache
 import io.github.kaii_lb.yamfsquared.xposed.utils.Instances
 import io.github.kaii_lb.yamfsquared.xposed.utils.TipUtil
 import io.github.kaii_lb.yamfsquared.xposed.utils.componentName
 import io.github.kaii_lb.yamfsquared.xposed.utils.getActivityInfoCompat
 import io.github.kaii_lb.yamfsquared.xposed.utils.startActivity
+import java.util.Locale
 
 @SuppressLint("ClickableViewAccessibility")
 class AppListWindow(val context: Context, val displayId: Int? = null) {
@@ -48,7 +50,7 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
     val users = mutableMapOf<Int, String>()
     var userId = 0
     var apps = emptyList<ActivityInfo>()
-    var showApps = emptyList<ActivityInfo>()
+    var showApps: MutableList<AppInfo> = mutableListOf()
 
     init {
         runCatching {
@@ -93,6 +95,7 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
             PopupMenu(context, binding.btnUser).apply {
                 users.forEach { (t, u) ->
                     menu.add(u).setOnMenuItemClickListener {
+
                         onSelectUser(t)
                         true
                     }
@@ -108,9 +111,18 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
 
         binding.etSearch.doOnTextChanged { text, _, _, _ ->
             text ?: return@doOnTextChanged
-            showApps = apps.filter { activityInfo ->
+            val filteredApps = apps.filter { activityInfo ->
                 text in activityInfo.packageName ||
                         AppInfoCache.getIconLabel(activityInfo).second.contains(text, true)
+            }
+            filteredApps.forEach{ activityInfo ->
+                val appInfoCache = AppInfoCache.getIconLabel(activityInfo)
+                showApps.add(
+                    AppInfo(
+                        appInfoCache.first, appInfoCache.second, activityInfo.componentName
+                    )
+                )
+                showApps.sortByDescending { it.label.toString().lowercase(Locale.ROOT) }
             }
             binding.rv.resetAdapter()
         }
@@ -133,10 +145,15 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
                 )
             }
             apps.forEach { activityInfo ->
-                AppInfoCache.getIconLabel(activityInfo)
+                val appInfoCache = AppInfoCache.getIconLabel(activityInfo)
+                showApps.add(
+                    AppInfo(
+                        appInfoCache.first, appInfoCache.second, activityInfo.componentName
+                    )
+                )
             }
+            showApps.sortBy { it.label.toString().lowercase(Locale.ROOT) }
             runMain {
-                showApps = apps
                 binding.etSearch.text.clear()
                 binding.rv.resetAdapter()
                 binding.pv.visibility = View.GONE
@@ -162,7 +179,8 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
 
         override fun initData(baseBinding: ItemAppBinding, position: Int) {
             val activityInfo = showApps[position]
-            val (icon, label) = AppInfoCache.getIconLabel(activityInfo)
+            val icon = activityInfo.icon
+            val label = activityInfo.label
             baseBinding.ivIcon.setImageDrawable(icon)
             baseBinding.tvLabel.text = label
         }
