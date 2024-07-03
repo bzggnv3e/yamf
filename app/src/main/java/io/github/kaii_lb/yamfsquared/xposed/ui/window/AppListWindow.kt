@@ -115,6 +115,7 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
                 text in activityInfo.packageName ||
                         AppInfoCache.getIconLabel(activityInfo).second.contains(text, true)
             }
+            showApps.clear()
             filteredApps.forEach{ activityInfo ->
                 val appInfoCache = AppInfoCache.getIconLabel(activityInfo)
                 showApps.add(
@@ -122,7 +123,7 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
                         appInfoCache.first, appInfoCache.second, activityInfo.componentName
                     )
                 )
-                showApps.sortByDescending { it.label.toString().lowercase(Locale.ROOT) }
+                showApps.sortBy { it.label.toString().lowercase(Locale.ROOT) }
             }
             binding.rv.resetAdapter()
         }
