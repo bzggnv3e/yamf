@@ -8,7 +8,9 @@ import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class AppInfo(
+    val id: Int,
     val icon: @RawValue Drawable,
     val label: CharSequence,
-    val componentName: ComponentName
+    val componentName: ComponentName,
+    val userId: Int
 ) : Parcelable

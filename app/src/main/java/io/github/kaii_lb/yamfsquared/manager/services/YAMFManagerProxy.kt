@@ -86,4 +86,8 @@ object YAMFManagerProxy : IYAMFManager, DeathRecipient {
     override fun resetAllWindow() {
         service?.resetAllWindow()
     }
+
+    override fun launchSideBar() {
+        service?.launchSideBar()
+    }
 }

@@ -7,8 +7,10 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("kotlin-android")
-    id("dev.rikka.tools.refine") version "4.3.0"
+    id("dev.rikka.tools.refine") version "4.4.0"
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -140,6 +142,14 @@ dependencies {
 
     //material
     implementation("com.google.android.material:material:1.12.0")
+
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.48.1")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
 }
 
 val gitHash: String

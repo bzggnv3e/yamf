@@ -27,4 +27,6 @@ interface IYAMFManager {
     void currentToWindow();
 
     void resetAllWindow();
+
+    void launchSideBar();
 }

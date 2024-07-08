@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:id="@+id/mcv"
         style="@style/Widget.Material3.CardView.Elevated"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="48dp"
+        android:background="?attr/colorSurface"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp">
 
@@ -53,5 +54,5 @@
                 android:layout_below="@id/ll_top"
                 android:indeterminate="true" />
         </RelativeLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 </FrameLayout>

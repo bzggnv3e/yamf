@@ -20,6 +20,10 @@
         android:title="current to window"
         app:showAsAction="never" />
     <item
+        android:id="@+id/launch_side_bar"
+        android:title="launch sidebar"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/channel"
         android:title="@string/telegram_channel"
         app:showAsAction="never" />

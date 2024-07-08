@@ -11,7 +11,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.SurfaceTexture
 import android.hardware.display.VirtualDisplay
@@ -30,10 +29,8 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.TextureView
 import android.view.View
-import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowManagerHidden
-import android.view.WindowMetrics
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import android.window.TaskSnapshot

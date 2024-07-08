@@ -45,9 +45,6 @@ class MainActivity: BaseActivity<ActivityMainBinding>(ActivityMainBinding::class
         YAMFManagerProxy.registerOpenCountListener(openCountListener)
     }
 
-    override fun initViews() {
-        super.initViews()
-    }
     @SuppressLint("SetTextI18n")
     override fun initData() {
         val buildTime = YAMFManagerProxy.buildTime
@@ -134,6 +131,10 @@ class MainActivity: BaseActivity<ActivityMainBinding>(ActivityMainBinding::class
             }
             R.id.current_to_window -> {
                 YAMFManagerProxy.currentToWindow()
+                true
+            }
+            R.id.launch_side_bar -> {
+                YAMFManagerProxy.launchSideBar()
                 true
             }
             else -> false

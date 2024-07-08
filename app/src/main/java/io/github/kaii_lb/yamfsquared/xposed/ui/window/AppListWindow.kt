@@ -30,6 +30,7 @@ import io.github.kaii_lb.yamfsquared.common.runMain
 import io.github.kaii_lb.yamfsquared.databinding.ItemAppBinding
 import io.github.kaii_lb.yamfsquared.databinding.WindowAppListBinding
 import io.github.kaii_lb.yamfsquared.manager.bases.BaseSimpleAdapter
+import io.github.kaii_lb.yamfsquared.manager.sidebar.SideBar
 import io.github.kaii_lb.yamfsquared.xposed.services.YAMFManager
 import io.github.kaii_lb.yamfsquared.xposed.ui.window.model.AppInfo
 import io.github.kaii_lb.yamfsquared.xposed.utils.AppInfoCache
@@ -37,6 +38,7 @@ import io.github.kaii_lb.yamfsquared.xposed.utils.Instances
 import io.github.kaii_lb.yamfsquared.xposed.utils.TipUtil
 import io.github.kaii_lb.yamfsquared.xposed.utils.componentName
 import io.github.kaii_lb.yamfsquared.xposed.utils.getActivityInfoCompat
+import io.github.kaii_lb.yamfsquared.xposed.utils.log
 import io.github.kaii_lb.yamfsquared.xposed.utils.startActivity
 import java.util.Locale
 
@@ -47,9 +49,9 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
     }
 
     private lateinit var binding: WindowAppListBinding
-    val users = mutableMapOf<Int, String>()
+    private val users = mutableMapOf<Int, String>()
     var userId = 0
-    var apps = emptyList<ActivityInfo>()
+    private var apps = emptyList<ActivityInfo>()
     var showApps: MutableList<AppInfo> = mutableListOf()
 
     init {
@@ -91,6 +93,8 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
             .forEach {
                 users[it.id] = it.name
             }
+
+        log(SideBar.TAG, users.toString())
         binding.btnUser.setOnClickListener {
             PopupMenu(context, binding.btnUser).apply {
                 users.forEach { (t, u) ->
@@ -120,7 +124,7 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
                 val appInfoCache = AppInfoCache.getIconLabel(activityInfo)
                 showApps.add(
                     AppInfo(
-                        appInfoCache.first, appInfoCache.second, activityInfo.componentName
+                        0, appInfoCache.first, appInfoCache.second, activityInfo.componentName, userId
                     )
                 )
                 showApps.sortBy { it.label.toString().lowercase(Locale.ROOT) }
@@ -149,7 +153,7 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
                 val appInfoCache = AppInfoCache.getIconLabel(activityInfo)
                 showApps.add(
                     AppInfo(
-                        appInfoCache.first, appInfoCache.second, activityInfo.componentName
+                        0, appInfoCache.first, appInfoCache.second, activityInfo.componentName, userId
                     )
                 )
             }
@@ -169,6 +173,7 @@ class AppListWindow(val context: Context, val displayId: Int? = null) {
     inner class Adapter : BaseSimpleAdapter<ItemAppBinding>(context, ItemAppBinding::class.java) {
         override fun initViews(baseBinding: ItemAppBinding, position: Int) {
             val activityInfo = showApps[position]
+
             baseBinding.ll.setOnClickListener {
                 if (displayId == null)
                     YAMFManager.createWindow(StartCmd(activityInfo.componentName, userId))

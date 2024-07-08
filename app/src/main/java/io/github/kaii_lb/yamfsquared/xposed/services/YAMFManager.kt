@@ -18,6 +18,7 @@ import io.github.kaii_lb.yamfsquared.common.gson
 import io.github.kaii_lb.yamfsquared.common.model.Config
 import io.github.kaii_lb.yamfsquared.common.model.StartCmd
 import io.github.kaii_lb.yamfsquared.common.runMain
+import io.github.kaii_lb.yamfsquared.manager.sidebar.SideBar
 import io.github.kaii_lb.yamfsquared.xposed.IOpenCountListener
 import io.github.kaii_lb.yamfsquared.xposed.IYAMFManager
 import io.github.kaii_lb.yamfsquared.xposed.hook.HookLauncher
@@ -44,6 +45,7 @@ object YAMFManager : IYAMFManager.Stub() {
     const val ACTION_CURRENT_TO_WINDOW = "io.github.kaii_lb.yamfsquared.action.CURRENT_TO_WINDOW"
     const val ACTION_OPEN_APP_LIST = "io.github.kaii_lb.yamfsquared.action.OPEN_APP_LIST"
     const val ACTION_OPEN_IN_YAMF = "io.github.kaii_lb.yamfsquared.action.ACTION_OPEN_IN_YAMF"
+    const val ACTION_LAUNCH_SIDE_BAR = "io.github.kaii_lb.yamfsquared.action.LAUNCH_SIDE_BAR"
 
     const val EXTRA_COMPONENT_NAME = "componentName"
     const val EXTRA_USER_ID = "userId"
@@ -91,10 +93,17 @@ object YAMFManager : IYAMFManager.Stub() {
                 `package` = intent.getStringExtra("sender")
             }, 0)
         }
+        systemContext.registerReceiver(ACTION_LAUNCH_SIDE_BAR) { _, _ ->
+            SideBar(
+                CommonContextWrapper.createAppCompatContext(systemUiContext.createContext()),
+                null
+            )
+        }
         configFile.createNewFile()
         config = runCatching {
             gson.fromJson(configFile.readText(), Config::class.java)
         }.getOrNull() ?: Config()
+        systemUiContext.startService(Intent(systemUiContext, SidebarService::class.java))
         log(TAG, "config: $config")
     }
 
@@ -206,6 +215,15 @@ object YAMFManager : IYAMFManager.Stub() {
         runMain {
             Instances.iStatusBarService.collapsePanels()
             systemContext.sendBroadcast(Intent(AppWindow.ACTION_RESET_ALL_WINDOW))
+        }
+    }
+
+    override fun launchSideBar() {
+        runMain {
+            SideBar(
+                CommonContextWrapper.createAppCompatContext(systemUiContext.createContext()),
+                null
+            )
         }
     }
 
