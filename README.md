@@ -1,4 +1,10 @@
 
+
+类原生的更多自由窗口
+修改自 https://github.com/JuanArton/reYAMF
+
+
+=========================================
 # reYAMF
 
 A fork of YAMF (forked from [YAMFSquared](https://github.com/kaii-lb/YAMFsquared), actually), with my changes.
